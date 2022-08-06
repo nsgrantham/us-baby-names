@@ -1,8 +1,6 @@
 name: Rerun the pipeline at the start of each month and update if new data is available
 
-on:
-  schedule:
-    - cron: "0 0 1 * *"
+on: [workflow_dispatch]
 
 jobs:
   refresh-data:
