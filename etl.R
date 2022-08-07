@@ -38,7 +38,7 @@ read_state_txt <- function(file) {
   )
 }
 
-write_and_upload <- function(data, file) {
+write_and_upload <- function(data, file, repo = repo, tag = tag) {
   write_csv(data, file)
   pb_upload(file, repo = repo, tag = tag, overwrite = TRUE)
   file_delete(file)
