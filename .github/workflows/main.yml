@@ -25,5 +25,5 @@ jobs:
         run: |
           source("etl.R")
         shell: Rscript {0}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
