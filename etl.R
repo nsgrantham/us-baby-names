@@ -1,5 +1,15 @@
 library(tidyverse)
+library(piggyback)
 library(fs)
+
+repo <- "nsgrantham/us-baby-names"
+tag <- "latest"
+
+releases <- pb_releases(repo, verbose = FALSE)
+tag_exists <- tag %in% releases$tag_name
+if (!tag_exists) {
+  pb_new_release(repo, tag)
+}
 
 download_and_unzip <- function(url, dir) {
   zipfile <- path_file(url)
@@ -26,8 +36,12 @@ read_state_txt <- function(file) {
   )
 }
 
+write_and_upload <- function(data, file) {
+  write_csv(data, file)
+  pb_upload(file, repo = repo, tag = tag, overwrite = TRUE)
+  file_delete(file)
+}
 
-# National
 
 "https://www.ssa.gov/oact/babynames/names.zip" %>%
   download_and_unzip(dir = "names") %>%
@@ -35,7 +49,7 @@ read_state_txt <- function(file) {
   map_dfr(read_yob_txt) %>%
   select(year, name, sex, n) %>%
   arrange(desc(year), desc(n)) %>%
-  write_csv("us-baby-names.csv")
+  write_and_upload("us-baby-names.csv.gz")
 
 dir_delete("names")
 
@@ -46,7 +60,7 @@ dir_delete("names")
   map_dfr(read_state_txt) %>%
   select(year, state, name, sex, n) %>%
   arrange(desc(year), state, desc(n)) %>%
-  write_csv("state-baby-names.csv")
+  write_and_upload("state-baby-names.csv.gz")
 
 dir_delete("namesbystate")
 
@@ -58,6 +72,6 @@ dir_delete("namesbystate")
   rename(territory = state) %>%
   select(year, territory, name, sex, n) %>%
   arrange(desc(year), territory, desc(n)) %>%
-  write_csv("territory-baby-names.csv")
+  write_and_upload("territory-baby-names.csv.gz")
 
 dir_delete("namesbyterritory")
