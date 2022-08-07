@@ -1,4 +1,6 @@
-library(tidyverse)
+library(dplyr)
+library(purrr)
+library(readr)
 library(piggyback)
 library(fs)
 
